@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>FitGauge — BMI & Fitness Calculator</title>
+<style>
+:root{--bg:#101827;--panel:#182438;--panel2:#202f46;--text:#eef4ff;--muted:#9aabc2;--accent:#65e0bd;--accent2:#6aa8ff;--border:#2c3d56;--danger:#ff8b8b;--shadow:0 18px 45px #0003}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#203958 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;padding:24px}
+body.light{--bg:#f2f6fb;--panel:#fff;--panel2:#edf3fa;--text:#17243a;--muted:#62728a;--border:#d8e2ef;--shadow:0 14px 35px #233c5c18;background:radial-gradient(circle at 10% 0%,#dcecff 0,transparent 35%),var(--bg)}
+.wrap{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#102238;font-size:24px;font-weight:900}.brand h1{font-size:22px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}.theme{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;padding:10px 14px;cursor:pointer}
+.hero{margin-bottom:22px}.hero h2{font-size:clamp(25px,4vw,36px);line-height:1.15;margin:0 0 8px}.hero p{color:var(--muted);margin:0;max-width:650px}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}.card{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 17px;font-size:18px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:13px;color:var(--muted);font-weight:600}input,select{width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:12px;color:var(--text);font:inherit;outline:none}input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px #6aa8ff22}.hint{font-size:11px;color:var(--muted)}.actions{display:flex;gap:10px;margin-top:18px}.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:800;cursor:pointer;font-size:14px}.primary{background:linear-gradient(120deg,var(--accent),#8ce7d1);color:#102238;flex:1}.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text)}
+.result-placeholder{min-height:300px;display:grid;place-items:center;text-align:center;color:var(--muted);padding:20px}.placeholder-icon{font-size:44px;margin-bottom:8px}.results{display:none}.results.show{display:block}.score{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;background:var(--panel2);border:1px solid var(--border);border-radius:16px}.score small{color:var(--muted)}.score strong{display:block;font-size:38px;line-height:1.1;margin-top:4px}.badge{border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;background:#65e0bd22;color:var(--accent)}.meter{height:10px;border-radius:20px;background:linear-gradient(90deg,#6aa8ff 0 28.33%,#65e0bd 28.33% 50%,#ffd166 50% 66.67%,#ff8b8b 66.67%);margin:18px 0 7px;position:relative}.needle{position:absolute;top:-5px;width:3px;height:20px;background:var(--text);border-radius:3px;left:0;transition:left .4s}.meter-labels{display:flex;color:var(--muted);font-size:10px}.meter-labels span{text-align:center;overflow:hidden;white-space:nowrap}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.stat{padding:13px;background:var(--panel2);border:1px solid var(--border);border-radius:14px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;font-size:20px;margin-top:3px}.note{font-size:12px;color:var(--muted);margin:15px 0 0}.section{margin-top:20px}.section h3{margin-bottom:12px}.table{width:100%;border-collapse:collapse;font-size:13px}.table td{padding:9px 5px;border-bottom:1px solid var(--border)}.table td:last-child{text-align:right;color:var(--muted)}.active-row td{color:var(--accent)!important;font-weight:800}.foot{color:var(--muted);font-size:11px;text-align:center;margin:22px 0 4px}
+@media(max-width:760px){body{padding:16px}.grid{grid-template-columns:1fr}.card{padding:18px}.top{margin-bottom:20px}.hero{margin-bottom:18px}}
+@media(max-width:420px){.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.score strong{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand"><div class="logo">＋</div><div><h1>FitGauge</h1><p>Personal health calculator</p></div></div>
+  <button class="theme" id="themeBtn" type="button">☀️ Light mode</button>
+</header>
+<section class="hero"><h2>Understand your body.<br><span style="color:var(--accent)">Track your health.</span></h2><p>Calculate BMI, BMR, estimated ideal weight and body-fat percentage in one simple place.</p></section>
+<main class="grid">
+<section class="card">
+<h3>Your details</h3>
+<form id="form">
+<div class="fields">
+ <div class="field"><label for="age">Age (years)</label><input id="age" type="number" min="18" max="100" value="26" required></div>
+ <div class="field"><label for="gender">Sex used for formula</label><select id="gender"><option value="male">Male</option><option value="female">Female</option></select></div>
+ <div class="field"><label for="height">Height (cm)</label><input id="height" type="number" min="100" max="230" step="0.1" placeholder="e.g. 180" required></div>
+ <div class="field"><label for="weight">Weight (kg)</label><input id="weight" type="number" min="20" max="350" step="0.1" placeholder="e.g. 80" required></div>
+ <div class="field"><label for="waist">Waist (cm) <span class="hint">optional</span></label><input id="waist" type="number" min="30" max="200" step="0.1" placeholder="At navel level"></div>
+ <div class="field"><label for="neck">Neck (cm) <span class="hint">optional</span></label><input id="neck" type="number" min="20" max="80" step="0.1" placeholder="Below larynx"></div>
+ <div class="field full" id="hipWrap" style="display:none"><label for="hip">Hip (cm) — for female estimate</label><input id="hip" type="number" min="40" max="200" step="0.1" placeholder="Widest point of hips"></div>
+</div>
+<p class="hint" style="margin:12px 0 0">For body-fat estimate, enter waist and neck. Female estimate also needs hip measurement.</p>
+<div class="actions"><button class="btn primary" type="submit">Calculate my results →</button><button class="btn secondary" type="reset">Reset</button></div>
+</form>
+</section>
+<section class="card">
+<h3>Your results</h3>
+<div class="result-placeholder" id="placeholder"><div><div class="placeholder-icon">◎</div><b>Your health snapshot will appear here</b><p>Enter your details and tap Calculate.</p></div></div>
+<div class="results" id="results">
+ <div class="score"><div><small>Your BMI</small><strong id="bmi">—</strong></div><span class="badge" id="category">—</span></div>
+ <div class="meter"><div class="needle" id="needle"></div></div>
+ <div class="meter-labels"><span style="width:28.33%">Low</span><span style="width:21.67%">Normal</span><span style="width:16.67%">High</span><span style="width:33.33%">Very high</span></div>
+ <div class="stats">
+  <div class="stat"><span>Basal metabolic rate</span><b id="bmr">—</b><span>kcal / day</span></div>
+  <div class="stat"><span>Estimated ideal weight</span><b id="ideal">—</b><span>kg (BMI 18.5–24.9)</span></div>
+  <div class="stat"><span>Body-fat estimate</span><b id="fat">—</b><span id="fatSub">Optional measurements</span></div>
+  <div class="stat"><span>Healthy weight range</span><b id="range">—</b><span>kg</span></div>
+ </div>
+ <p class="note" id="interpretation"></p>
+</div>
+</section>
+</main>
+<section class="card section">
+<h3>BMI categories (adult reference)</h3>
+<table class="table">
+<tr id="row-under"><td>Underweight</td><td>Below 18.5</td></tr>
+<tr id="row-normal"><td>Normal range</td><td>18.5 – 24.9</td></tr>
+<tr id="row-over"><td>Overweight</td><td>25.0 – 29.9</td></tr>
+<tr id="row-obese"><td>Obesity</td><td>30.0 and above</td></tr>
+</table>
+<p class="note">BMI is a screening measure, not a diagnosis. BMR is an estimate of calories your body uses at rest; it is not a daily calorie target. Ideal weight is calculated from the adult BMI range. Body-fat percentage uses the US Navy circumference formula and is only an estimate.</p>
+</section>
+<p class="foot">FitGauge • For educational use only • Consult a qualified health professional for medical advice.</p>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+$('gender').addEventListener('change',()=>{$('hipWrap').style.display=$('gender').value==='female'?'flex':'none'});
+$('themeBtn').addEventListener('click',()=>{document.body.classList.toggle('light');$('themeBtn').textContent=document.body.classList.contains('light')?'🌙 Dark mode':'☀️ Light mode'});
+$('form').addEventListener('reset',()=>{setTimeout(()=>{$('placeholder').style.display='grid';$('results').classList.remove('show');$('hipWrap').style.display=$('gender').value==='female'?'flex':'none';document.querySelectorAll('.active-row').forEach(r=>r.classList.remove('active-row'));},0)});
+$('form').addEventListener('submit',e=>{
+ e.preventDefault();
+ const age=+$('age').value,h=+$('height').value,w=+$('weight').value,g=$('gender').value,wa=+$('waist').value,ne=+$('neck').value,hip=+$('hip').value;
+ if(!age||!h||!w||age<18||age>100||h<100||h>230||w<20||w>350){alert('Please enter valid adult age, height and weight.');return}
+ const hm=h/100,bmi=w/(hm*hm),bmr=10*w+6.25*h-5*age+(g==='male'?5:-161);
+ const low=18.5*hm*hm,high=24.9*hm*hm;
+ let cat,desc,row,col;
+ if(bmi<18.5){cat='Underweight';desc='Your BMI is below the adult reference range.';row='row-under';col='#6aa8ff'}
+ else if(bmi<25){cat='Normal range';desc='Your BMI is within the adult reference range.';row='row-normal';col='#65e0bd'}
+ else if(bmi<30){cat='Overweight';desc='Your BMI is above the adult reference range.';row='row-over';col='#ffd166'}
+ else{cat='Obesity';desc='Your BMI is in the obesity range. Consider discussing it with a health professional.';row='row-obese';col='#ff8b8b'}
+ $('bmi').textContent=bmi.toFixed(1);$('category').textContent=cat;$('category').style.color=col;$('category').style.background=col+'22';$('bmr').textContent=Math.round(bmr).toLocaleString('en-IN');
+ $('ideal').textContent=((low+high)/2).toFixed(1);$('range').textContent=low.toFixed(1)+'–'+high.toFixed(1);
+ let fatText='—',fatSub='Add measurements for estimate';
+ if(wa>0&&ne>0&&(g==='male'||hip>0)){
+   // US Navy method; all circumference inputs in cm, converted to inches.
+   const inch=x=>x/2.54;let bf,bad='';
+   if(g==='male'){if(wa<=ne){bad='Waist must be greater than neck'}else bf=86.010*Math.log10(inch(wa-ne))-70.041*Math.log10(inch(h))+36.76}
+   else{if(wa+hip<=ne){bad='Check waist, hip and neck values'}else bf=163.205*Math.log10(inch(wa+hip-ne))-97.684*Math.log10(inch(h))-78.387}
+   if(!bad&&Number.isFinite(bf)&&bf>0&&bf<70){fatText=bf.toFixed(1)+'%';fatSub='US Navy formula · estimate'}else{fatSub=bad||'Check measurements and try again'}
+ }
+ $('fat').textContent=fatText;$('fatSub').textContent=fatSub;$('interpretation').textContent=desc+' These estimates do not account for muscle mass, pregnancy, age-related changes or individual health conditions.';
+ document.querySelectorAll('.active-row').forEach(r=>r.classList.remove('active-row'));$(row).classList.add('active-row');
+ $('needle').style.left=Math.min(99,Math.max(1,((bmi-10)/30)*100))+'%';
+ $('placeholder').style.display='none';$('results').classList.add('show');
+});
+</script>
+</body>
+</html>
